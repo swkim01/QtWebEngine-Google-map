@@ -46,8 +46,7 @@
              gps_location = eval('('+request.responseText+')');
         }
       }
-      //request.open("GET","getLocation");
-      request.open("GET","http://localhost:8008/getLocation");
+      request.open("GET","getLocation");
       request.send();
     }
 
@@ -55,8 +54,7 @@
     function setcenter() {
       if(gps_location == null) gps_ll = null;
       else {
-        //gps_ll = ol.proj.transform([gps_location['lon'], gps_location['lat']], 'EPSG:4326', 'EPSG:3857');
-        gps_ll = [gps_location['lon'], gps_location['lat']];
+        gps_ll = ol.proj.transform([gps_location['lon'], gps_location['lat']], 'EPSG:4326', 'EPSG:3857');
         //myView.setCenter(gps_ll);
         marker.setPosition(gps_ll);
       }
@@ -97,6 +95,15 @@
     var tileLayer = new GoogleMapTile(
         'Google Street Map', true, 'base',
 	'http://mt{0-3}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}');
+    var tileLayer2 = new GoogleMapTile(
+        'Google Sky Map', true, 'base',
+        'http://mt{0-3}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}');
+    var tileLayer3 = new GoogleMapTile(
+        'Google Terrain Map', true, 'base',
+	'http://mt{0-3}.google.com/vt/lyrs=t,r&x={x}&y={y}&z={z}');
+    var tileLayer4 = new GoogleMapTile(
+        'Google Hybrid Map', false, 'overlay',
+	'http://mt{0-3}.google.com/vt/lyrs=h&x={x}&y={y}&z={z}');
 
     function init() {
         myView = new ol.View({
@@ -120,7 +127,22 @@
                 new ol.control.ScaleLine(),
                 //new ol.control.LayerSwitcher()
             ],
-            layers : [ tileLayer ],
+            layers : [
+                new ol.layer.Group({
+                    title : 'Base Maps',
+                    layers : [
+                        tileLayer,
+                        tileLayer2,
+                        tileLayer3
+                    ]
+                  }),
+                new ol.layer.Group({
+                    title: 'Overlay Maps',
+                    layers: [
+                        tileLayer4
+                    ]
+                })
+            ],
             target : 'map',
             renderer: 'canvas',
             interactions : ol.interaction.defaults({
@@ -135,13 +157,13 @@
         });
         map.addOverlay(marker);
 
-        setupEvents();
+        //setupEvents();
     };
     // 이벤트 반복
     function setupEvents() {
         setInterval(function() {
             refresh_location();
-            setcenter();
+            //setcenter();
         }, 1500);
     }
     window.onload = function() {

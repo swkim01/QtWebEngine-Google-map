@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>map.html</file>
+        <file>geolocation_marker.png</file>
     </qresource>
 </RCC>
