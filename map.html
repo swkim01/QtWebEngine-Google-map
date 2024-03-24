@@ -36,6 +36,21 @@
     var gps_ll;
     var myView;
     var marker;
+    var markerLayer = new ol.layer.Vector({
+        source: new ol.source.Vector(),
+        style: new ol.style.Style({
+            image: new ol.style.Icon({
+                src: "geolocation_marker.png"
+            })
+        })
+    });
+
+    function createMarker(lng, lat, id) {
+        return new ol.Feature({
+            geometry: new ol.geom.Point([lng, lat]),
+            id: id
+        });
+    }
 
     // gps 로그 파싱
     function refresh_location() {
@@ -58,7 +73,12 @@
         //gps_ll = ol.proj.transform([gps_location['lon'], gps_location['lat']], 'EPSG:4326', 'EPSG:3857');
         gps_ll = [gps_location['lon'], gps_location['lat']];
         //myView.setCenter(gps_ll);
-        marker.setPosition(gps_ll);
+        //marker.setPosition(gps_ll);
+
+        //for (let i = 0; i < data.length; i++) {
+        //  markerLayer.getSource().addFeature(createMarker(data[i].longitude, data[i].latitude, data[i].id)));
+        //}
+	markerLayer.getSource().addFeature(createMarker(gps_ll[0], gps_ll[1], 0));
       }
     }
 
@@ -102,7 +122,7 @@
         myView = new ol.View({
                 projection : 'EPSG:4326',
                 center : [129.076, 35.180],
-                zoom : 11
+                zoom : 16
         });
     
         // set map
@@ -128,12 +148,15 @@
             }),
             view : myView
         });
+	/*
         marker = new ol.Overlay({
           positioning: 'center-center',
           element: document.getElementById('marker'),
           stopEvent: false
         });
         map.addOverlay(marker);
+	*/
+	map.addLayer(markerLayer);
 
         setupEvents();
     };
